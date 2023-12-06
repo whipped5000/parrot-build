@@ -8,7 +8,6 @@
   package:
     name:
       - jq
-      - pipx
       - ntpdate
       - flameshot
       - exiftool

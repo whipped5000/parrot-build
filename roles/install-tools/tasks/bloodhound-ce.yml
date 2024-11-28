@@ -1,0 +1,38 @@
+---
+- name: Create /opt/BloodHound-CE directory
+  become: true
+  become_method: sudo
+  file:
+    path: /opt/BloodHound-CE
+    state: directory
+    mode: '0755'
+
+- name: Download docker-compose.yml
+  become: true
+  become_method: sudo
+  get_url:
+    url: https://raw.githubusercontent.com/SpecterOps/BloodHound/refs/heads/main/examples/docker-compose/docker-compose.yml
+    dest: /opt/BloodHound-CE/docker-compose.yml
+    mode: '0644'
+
+- name: Run docker compose pull
+  become: true
+  become_method: sudo
+  command: docker compose pull
+  args:
+    chdir: /opt/BloodHound-CE
+
+- name: Download git Bloodhound.py
+  git:
+    repo: "https://github.com/dirkjanm/BloodHound.py"
+    dest: "/opt/Bloodhound.py"
+    version: "bloodhound-ce"
+  become: true
+  become_method: sudo
+
+- name: "Build Bloodhound.py"
+  become: true
+  become_method: sudo
+  shell:
+    cmd: docker build -t bloodhoundpy .
+    chdir: /opt/Bloodhound.py

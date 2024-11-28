@@ -11,6 +11,8 @@
       - ntpdate
       - flameshot
       - exiftool
+      - ca-certificates
+      - curl
     state: latest
   become: true
   become_method: sudo

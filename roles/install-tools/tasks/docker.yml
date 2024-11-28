@@ -1,0 +1,55 @@
+---
+- name: Ensure directory for GPG keys exists
+  become: true
+  become_method: sudo
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download Docker GPG key
+  become: true
+  become_method: sudo
+  get_url:
+    url: https://download.docker.com/linux/debian/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: '0644'
+
+- name: Add Docker APT repository
+  become: true
+  become_method: sudo
+  apt_repository:
+    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian bullseye stable"
+    state: present
+
+- name: Update apt and install docker-ce
+  become: true
+  become_method: sudo
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: latest
+    update_cache: true
+
+- name: Ensure the docker group exists
+  become: true
+  become_method: sudo
+  ansible.builtin.group:
+    name: docker
+    state: present
+
+- name: Add the current user to the docker group
+  become: true
+  become_method: sudo
+  ansible.builtin.user:
+    name: "{{ lookup('env', 'USER') }}"
+    groups: docker
+    append: yes
+
+- name: Inform user about the need to re-login
+  ansible.builtin.debug:
+    msg: "You need to log out and log back in for the group changes to take effect."

@@ -1,0 +1,24 @@
+- name: Ensure Python 3 and pip are installed
+  become: true
+  become_method: sudo
+  package:
+    name:
+      - python3
+      - python3-pip
+    state: present
+
+- name: Install pipx using pip
+  package:
+    name:
+      - pipx
+    state: latest
+  become: true
+  become_method: sudo
+
+- name: Ensure pipx binaries are in the PATH
+  shell: |
+    python3 -m pipx ensurepath
+  args:
+    executable: /bin/bash
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/root/.local/bin"

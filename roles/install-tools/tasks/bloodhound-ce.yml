@@ -29,6 +29,7 @@
     version: "bloodhound-ce"
   become: true
   become_method: sudo
+  register: git_blood
 
 - name: "Build Bloodhound.py"
   become: true
@@ -36,3 +37,4 @@
   shell:
     cmd: docker build -t bloodhoundpy .
     chdir: /opt/Bloodhound.py
+  when: git_blood.changed

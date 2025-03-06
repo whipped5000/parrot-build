@@ -15,6 +15,20 @@
     dest: /etc/apt/keyrings/docker.asc
     mode: '0644'
 
+- name: Remove old docker
+  become: true
+  become_method: sudo
+  apt:
+    name:
+      - docker.io
+      - docker-doc
+      - docker-compose
+      - podman-docker
+      - containerd
+      - runc
+    state: absent
+    update_cache: true
+    
 - name: Add Docker APT repository
   become: true
   become_method: sudo
